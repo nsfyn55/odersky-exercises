@@ -1,0 +1,10 @@
+Reducing Duplications:
+  Functions are seperated into common parts
+    - common parts are the body
+    - non common parts are supplied by parameter
+    - we can supply function values as parameters where the parameter is itself another algorithm
+    - we can use higher order functions to condense and simplify code
+
+  Place Holders in FileMatcher.scala example:
+    - beecause the params are each only used once, and they are used in a specific order we can use
+      place holder syntax

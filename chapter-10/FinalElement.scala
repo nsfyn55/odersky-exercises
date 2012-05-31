@@ -1,5 +1,34 @@
 import FinalElement.elem
 
+/*
+  Class Element Wraps an array of strings
+  what you have is an array of strings
+  of arbitrary length there are couple of operations of interest
+
+  above - puts takes a element and another element widens both so they
+  are the same width and concatenates the arrays so you end up with
+  this above that
+
+  array 1 -  0  aa     array 2 - 0 bb
+             1  aa               1 bb 
+
+  result:  0 aa
+           1 aa
+           2 bb 
+           3 bb 
+
+
+  beside - takes two elements, first ensures they are the same height, then
+  processes each array appending the contents of that to this
+
+  array 1 -  0  aa     array 2 - 0 bb
+             1  aa               1 bb 
+
+  result:  0 aabb
+           1 aabb
+
+
+*/
 abstract class FinalElement{
 
   def contents: Array[String]
@@ -7,12 +36,33 @@ abstract class FinalElement{
   def width: Int = contents(0).length
   def height: Int = contents.length
 
+  /*
+    takes an element
+    widens this element to the width of that
+    widends that element to the width of this
+    appends the contents of this and that
+
+    this - **
+    that - ***
+
+    result  - ** \n
+              ***\n
+  */
   def above(that: FinalElement): FinalElement = {
     val this1 = this widen that.width
     val that1 = that widen this.width
     elem(this1.contents ++ that1.contents)
   }
   
+  /*
+    takes an element
+    extends the height of both this and that
+    such that concatenates arrays as two vertical
+    columns
+
+    *
+    
+  */
   def beside(that: FinalElement): FinalElement = {
     val this1 = this heighten that.height
     val that1 = that heighten this.height
@@ -22,7 +72,31 @@ abstract class FinalElement{
         )yield line1 + line2
     )
   }
+  /*
+    widens contents by a factor of w -
+    first it assigns an elem of left that is a uniform elem
+    of ' ' chars, with a width of (w - width)/2 and a height of the current 
+    height
 
+    it then assigns an elem of right which is a UniformElement of
+    ' ' chars, with a width of w - width - left's width, and a hieght of hieght
+
+    so a w of 2 on a width of 1 will create an array of padding left that is  0 ' 's wide
+    and a padding right that is 2 - 1 -0 = 1 ' '  wide
+
+    it then calls the left.beside(this.beside.(right))
+
+    start : 0 - a
+            1 - b
+            2 - c
+    widen(2)
+
+    result: 0 - a<sp>
+            1 - b<sp>
+            2 - c<sp>
+            
+    
+  */
   def widen(w: Int): FinalElement = 
     if (w <= width) this
     else {
@@ -30,7 +104,11 @@ abstract class FinalElement{
         var right = elem(' ', w - width - left.width, height)
         left beside this beside right
     }
-  
+ /*
+  heighten is the same principle as widen except that it creates uniform top and
+  bottom given the hieght param and calls
+  top.above(this.above(bot))
+ */
   def heighten(h: Int): FinalElement = 
     if ( h <= height) this
     else{
@@ -43,16 +121,27 @@ abstract class FinalElement{
 }
 
 object FinalElement {
+  /*
+    array elem is a regular elem that
+    is formed from an array of strings
+  */
   private class ArrayElement(
     val contents: Array[String]
   )extends FinalElement
 
+ /*
+  Line Element is just a string 
+ */
   private class LineElement(s: String) extends FinalElement {
     val contents = Array(s)
     override def width = s.length
     override def height = 1
   }
 
+  /* 
+    Uniform Element is Element of a given char 
+    expanded over a width and height
+  */
   private class UniformElement(
     ch: Char,
     override val width: Int,

@@ -1,0 +1,8 @@
+== is designed for transparency
+- for value types it is the natural equality
+- for reference types other than boxed numerics it is an alias of java.Object's equals method
+
+
+Null And Nothing
+- Are subclasses of every class
+- null is not compatible with value types var x = 2; x = null will not compile

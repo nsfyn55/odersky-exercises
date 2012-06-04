@@ -32,3 +32,27 @@ trait Filtering extends IntQueue{
     if(x >= 0) super.put(x)
   }
 }
+/*
+  Multiple Inheritance:
+    With MI the called by a super call is statically determined where the call appears
+
+    With traits, the methd called is determined by a linearization of the classes and traits
+    that have been mixed in.
+
+    val q = new BasicIntQueue with Incrementing with Doubling
+    q.put(42) // which put is called?
+
+    //First
+    First gets called but not second
+
+    //Last
+    Same problem in reverse
+
+    How does linearization work?
+
+    class Animal
+    trait Furry extends  Animal
+    trait HasLegs extends Animal
+    trait FourLegged extends HasLegs
+    class Cat extends Animal with Furry with FourLegged
+*/

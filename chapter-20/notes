@@ -1,0 +1,136 @@
+There are four types of abstract members:
+vals
+vars 
+methods 
+types
+
+
+The term 'abstract type' in scala refers to a type
+declared with the type keyword to be a member of
+a class or trait without specifying a defintion.
+
+Classes may be abstract and traits are abstract
+by definition.
+
+20.3 Abstract vals
+
+take the two following scenario:
+given an abstract val definition - val initial: String
+you could implement it as follows.
+val initial = "hi"
+
+
+This looks a lot like the parameterless method definition
+below:
+def initial: String - parameterless method definition.
+
+Client code referring to initial would even invoke these
+constructs exactly the same way
+
+obj.initial
+
+The key difference is that the client can be assured as
+to the referential transparency of this definition:
+
+val initial:String
+
+While it does not have the same assurances for the following:
+
+def initial: String
+
+this is because the abstract method declaration has access
+to other state which could cause its value to change
+from call to call.
+
+To summarize: the definition(val initial: String) constrains
+the potential implementations and may not be implemented by
+either a var or a method.-c
+
+the key difference is that
+
+
+20.5 Initializing abstract vals
+
+It is possible to appear to instantiate a trait directly
+for instance:
+trait RationalTrait {
+  val numerArg: Int
+  val denomArg: Int
+}
+
+new RationalTrait {
+  val numerArg = 1
+  val denomArg = 2
+}
+
+What this actually does is create an anonymous class that 
+implements RationalTrait. This appears to be functionally
+the same as defining a concrete class and mixing in 
+the RationalTrait. This however is not exactly true.
+The key problem is the order in which expressions are evaluated
+
+if we had a class called Rational with the same fields and
+called it as such:
+new Rational(expr1, expr2)
+
+The two expression arguments would be evaluated before the 
+class was instantiated. This makes them available in the
+initialization of the class.
+
+The above definition of the trait is ok because the
+initialization of the trait does not make use of these values.
+but a more complex definition would have a different outcome
+
+new RationalTrait {
+  val numerArg = x * 2 
+  val denomArg = x * 2 
+  require(denomArg != 0)
+}
+
+This will fail on the same attempt to intialize this anonymously. This is because creating a new RationalTrait involves 
+several steps. First you initialize the trait, then you 
+create a class that mixes the trait in using the supplied
+expressions. The expressions are evaluated in the second step
+the evaluation of "require" in the above example occurs before
+those values are available.
+
+
+pre-initialized fields
+======================
+The following solves the problem above
+new { 
+  val numerArg = 1 * x
+  val denomArg = 1 * x
+} with RationalTrait
+
+There is a gotcha here in that you cannot use 'this' keyword
+in the initializer because it refers to the object containing
+the class and not the constructed object itself
+//Bad JUJU: numerArg is not a member of the class object
+new { 
+  val numerArg = 1 * x
+  val denomArg = 1 * this.numerArg 
+} with RationalTrait
+
+lazy vals
+=========
+pre-initialization of fields simulates exactly the 
+initialization behavior. You can also let the system sort 
+this out with use of the lazy keyword.
+
+with the lazy keyword applied to a value it won't be initalized
+until the first time it is used.
+
+lazy vals can be used to get around problematic initialization
+behavior
+
+lazy vals DO NOT require any specific ordering. They do dependency resolution:
+lazy val numer = numerArg / g
+private lazy val g = {
+  require(denomArg != 0)
+  gcd(numerArg, denomArg)
+}
+This will compile even though g is defined after numer. 
+IMPORTANT! this only holds true in the abscense of side effect
+if the initialization of lazy vals either produces or relies
+on side effects then the order of initialization is important.

@@ -1,0 +1,39 @@
+20.6 Abstract Types
+===================
+
+The type checker does not allow you to override methods
+with different types
+
+For Instance:
+class Food
+class Grass extends Food
+
+you couldn't override in the following way
+def eat(food: Food)
+
+@override
+def eat(food: Grass) // This won't compile because the types 
+                     // don't match.
+
+The reason for this is because there is no way to control
+what food would be suitable for overriding classes
+
+
+Abstract types allow us to do more precise modeling by allowing
+the class that implements the eat method to decide what type offood is suitable for that class.
+
+class Food
+abstract class Animal {
+  type SuitableFood <: Food
+  def eat(food: SuitableFood)
+} 
+
+The "<:" is an upper bound meaning that any concrete 
+instantiation of this type in a subclass of Animal must
+also be a subclass of food.
+
+//This would be a valid implementation
+class Grass extends Food
+class Cow extends Animal {
+  type SuitableFood = Grass
+  override def eat(food: Grass) {}

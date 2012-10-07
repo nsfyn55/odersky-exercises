@@ -1,0 +1,32 @@
+20.9 Enumerations
+=================
+Scala does not require specific language support for 
+enumerations like java and C#. You need simply extend
+class Enumeration 
+
+object Color extends Enumeration{
+  val Red, Green, Blue = Value
+}
+
+The primary thing to note is the "Value". It is a path 
+dependent type. With Color being the path and Value being
+the type.
+
+You can associate names by using various overloaded variants
+of the Value method.
+
+object Direction extends Enumeration {
+  val North = Value("North")
+  val South= Value("South")
+  val East = Value("East")
+  val West = Value("West")
+}
+
+you can iterate over values by using the values method.
+
+for (d <- Direction.values) print(d + " ") 
+
+or find the ordinal with its id method
+
+Direction.East.id
+Int = 1

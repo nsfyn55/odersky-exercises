@@ -1,0 +1,71 @@
+20.8 Structural Subtyping
+=========================
+nominal subtyping is subtyping by name using an explicit
+extends keyword. Structural subtyping is a subtype relationship
+that exists just because two types have the same members.
+
+You should always try to use nominal subtyping first.
+
+
+CASE 1
+======
+One good application is when a type isn't really anything 
+beyond its members. 
+
+Odersky gives an example of a pasture where you place 
+Animal's that eat grass. You could create a trait
+AnimalThatEatsGrass and mix it in all over the place but
+this seems redundant if you have a Cow that is an Animal
+with a method specified to eat grass.
+
+To avoid the above situation you could use a refinement type.
+
+Animal { type SuitableFood = Grass }
+
+class Pasture {
+  var animals: List [Animal { type SuitableFood: Grass} ]
+}
+
+The above example refines the types Pasture will accept
+with out requiring verbose trait definitions
+
+CASE 2
+======
+You can use structural subtyping to group together classes
+written by someone else.
+
+Take the following two methods:
+using(new PrintWriter("date.txt")) { writer => 
+  writer.println(new Date)
+}
+
+using(serverSocket.accept()) { socket =>
+  socket.getOutputStream().write("Hello, World".getBytes);
+}
+
+using does a pretty straightforward thing. It uses an object 
+and closes it.
+
+def using[T, S](obj: T)(operation: T => S) = {
+  val result = operation(obj)
+  obj.close()
+  result
+}
+
+The above example has a type error. You can't call close() on 
+type T because T is not defined yet and may not have a close
+method.
+
+Refinement types can be used in this example because you
+can refine types just on their members. This is useful in
+this case because you do not have control over the classes
+and cannot freely mix traits into them.
+
+def using[T <: { def close(): Unit }, S](obj: T)(operation: T => S) = {
+  val result = operation(obj)
+  obj.close()
+  result
+}
+
+The above definition refines the acceptable types to those with
+close() methods

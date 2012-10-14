@@ -1,0 +1,17 @@
+21.2 Implicits
+Scala compiler first attempts to compile as is
+then it looks to see if there are any implicits that
+it could use to resolve the type error.
+
+The implicit keyword marks which declarations the compiler 
+will consider for implicit conversions.
+
+There are three places implicits are used:
+1. Converting to an expected type
+
+2. Conversions of the reciever of a selection
+   if you call a method that does not exist on an
+   object, but an implicit conversion exists that could 
+   decorate that object with that method.
+
+3. implicit parameters

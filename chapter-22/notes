@@ -1,0 +1,37 @@
+List cons signature
+
+def ::[U >: T](x: U): List[U] = new scala.::(x,this)
+
+What does this say?
+there is a type parameter U and it is contrained to only
+supertypes of T. The element added is of type U and the 
+return type is of List[U](bear in mind list is covariant)
+
+The above definition is necessary because method definitions
+are place in contravariant positions.
+
+Refresher methods that end in a colon are right associative.
+
+take the following class hierarchy
+
+abstract class Fruit
+class Apple extends Fruit
+class Orange extends Fruit
+
+val apples = new Apple :: Nil ---> List[Apple]
+
+val fruites = new Orange :: Nil ---> List[Fruits]
+
+
+Most implementations of List operations(such as map) operate
+on a ListBuffer and return a list as the result using 
+ListBuffers toList method. toList is a constant time operation
+basically a list is always available in ListBuffer. Once toList
+is call it just returns a reference to the start.
+
+There is a caveat scenario
+==========================
+If you take a ListBuffer add some elements(constant time) and 
+convert to a List toList(constant time) this flips a flag in ListBuffer
+called exported. Adding further elements to the list requires that
+whole list be copied.
